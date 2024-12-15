@@ -3,15 +3,11 @@ import { Router } from 'express';
 const router = Router();
 
 //Routing
-router.get( '/', ( req, res ) => {
+router.post( '/auth/register', ( req, res ) => {
 
-    res.send( "Hola Mundo" );
-
-} )
-
-router.get( '/nosotros', ( req, res ) => {
-
-    res.send( "Hola nosotros" );
+    console.log(req.body);
+    
+    res.send( "Hola register" );
 
 } )
 

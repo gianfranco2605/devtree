@@ -1,30 +1,22 @@
-import type { Request, Response } from 'express';
-import User from "../models/Users";
+import { Request, Response, NextFunction } from 'express';
+import User from '../models/Users';
 
-export const createAccount = async ( req: Request, res:Response ) => {
+export const createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { email, password } = req.body;
 
-    const { email } = req.body;
+        const userExist = await User.findOne({ email });
 
-    const userExist = await User.findOne({ email });
+        if (userExist) {
+            res.status(409).json({ error: 'El usuario ya existe' });
+        }
 
-    if( userExist ) {
-        console.log('El usuario ya existe');
-        
-    }else {
-        console.log('El usuario no existe');
+        const user = new User(req.body);
+
+        await user.save();
+
+        res.status(201).send('Registro creado con éxito');
+    } catch (error) {
+        next(error);
     }
-    
-    
-
-    return;
-
-    const user = new User( req.body );
-
-    await user.save();
-
-    //Another way to save data
-    // await User.create( req.body);
-
-    res.send('Registro creado con éxito');
-
-}
+};

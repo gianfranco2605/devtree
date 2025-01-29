@@ -1,14 +1,23 @@
 import mongoose, { Schema } from "mongoose";
 
-interface IUser {
+export interface IUser {
 
+    handle: string
     name: string,
     email: string,
     password: string
+    
 }
 
 const userSchema = new Schema({
 
+    handle: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        unique: true
+    },
     name: {
         type: String,
         required: true,
@@ -18,7 +27,8 @@ const userSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        unique: true
+        unique: true,
+        lowercase: true,
 
     },
     password: {

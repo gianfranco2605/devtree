@@ -5,13 +5,13 @@ import colors from "colors";
 
 export const connectDB = async () => {
 
-    try {
+    try {        
 
-        const {connection} = await mongoose.connect( process.env.MONGO_URI );
+        const url = 'mongodb+srv://root:8rEDmgrlvQBeIVoh@devtree.kfrpv.mongodb.net/?retryWrites=true&w=majority&appName=devtree';
 
-        const url = `${connection.host}:${connection.port}`
+        const { connection } = await mongoose.connect( url);
         
-        console.log(colors.blue.bold(`Connect to mongo en ${url}`));
+        console.log(colors.blue(`${connection.host}:${connection.port}`));
         
     } catch (error) {
 

@@ -1,10 +1,10 @@
-import colors from "colors";
-import server from "./server";
+import server from './server';
+import colors from 'colors'
 
-const port : string | number = process.env.PORT || 4000;
+const port = process.env.PORT || 4000;
 
-server.listen(port, () => {
+server.listen( port, () => {
 
-    console.log(colors.bold.magenta.italic(`Server funzionando en  ${port}`));   
+    console.log(colors.magenta.italic (`Server is running on port ' + ${port}`));
 
-} )
+});

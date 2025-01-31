@@ -1,10 +1,21 @@
 import { Request, Response, NextFunction } from "express";
+import { validationResult } from "express-validator";
 import slugify from "slugify";
 import User from "../models/User";
 import { hashPassword } from "../utils/auth";
 
 export const createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+
+        let errors = validationResult(req);
+
+        if(errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }
+
+        console.log(errors);
+        
         const { email, password } = req.body;
 
         const userExist = await User.findOne({ email });

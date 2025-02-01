@@ -7,7 +7,7 @@ export const connectDB = async () => {
 
     try {        
 
-        const url = 'mongodb+srv://root:8rEDmgrlvQBeIVoh@devtree.kfrpv.mongodb.net/?retryWrites=true&w=majority&appName=devtree';
+        const url = process.env.MONGO_URI || "mongodb://localhost:27017/express-ts";
 
         const { connection } = await mongoose.connect( url);
         

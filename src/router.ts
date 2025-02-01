@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { createAccount } from "./handlers"; 
+import { createAccount, login } from "./handlers"; 
+import { handleInputErrors } from "./middleware/validation";
 
 const router = Router();
 
@@ -16,11 +17,23 @@ router.post("/auth/register",
     body('email')
         .isEmail()
         .withMessage('Email not valid'),
-    body('name')
-        .isLength({ min: 8 })
-        .withMessage('Password is required'), 
+    body('password')
+        .isLength({ min: 6 })
+        .withMessage('Password to short'), 
+    //HandleErrors
+    handleInputErrors,
     //Handle
      createAccount
     ) ;
+
+    router.post('/auth/login',
+        body('email')
+            .isEmail()
+            .withMessage('Email not valid'),
+        body('password')
+            .notEmpty()
+            .withMessage('Password is required'),  
+        login
+    );
 
 export default router;

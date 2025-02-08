@@ -65,14 +65,16 @@ export const login = async (req: Request, res: Response) => {
     const isPasswordCorrect = await checkPassword(password, user.password);
 
     if (!isPasswordCorrect) {
+      
       const error = new Error('Invalid password');
       res.status(401).json({ error: error.message });
-      return  
+      return;
+        
     }
 
-    generateJWT(user);
+    const token = generateJWT({id:user._id});
 
-    res.send('Authenticated');
+    res.send( token );
 
   } catch (error) {
 

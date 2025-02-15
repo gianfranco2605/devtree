@@ -5,6 +5,7 @@ import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
 
+
 export const createAccount = async (
   req: Request,
   res: Response,
@@ -65,16 +66,16 @@ export const login = async (req: Request, res: Response) => {
     const isPasswordCorrect = await checkPassword(password, user.password);
 
     if (!isPasswordCorrect) {
-      
+
       const error = new Error('Invalid password');
       res.status(401).json({ error: error.message });
       return;
-        
+
     }
 
-    const token = generateJWT({id:user._id});
+    const token = generateJWT({ id: user._id });
 
-    res.send( token );
+    res.send(token);
 
   } catch (error) {
 
@@ -82,3 +83,10 @@ export const login = async (req: Request, res: Response) => {
   }
 
 }
+
+export const getUser = async (req: Request, res: Response) => {
+
+  res.json(req.user); 
+
+}
+

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { createAccount, login } from "./handlers"; 
+import { createAccount, getUser, login } from "./handlers"; 
 import { handleInputErrors } from "./middleware/validation";
+import { authenticate } from "./middleware/auth";
 
 const router = Router();
 
@@ -35,5 +36,7 @@ router.post("/auth/register",
             .withMessage('Password is required'),  
         login
     );
+
+    router.get('/user', authenticate, getUser)
 
 export default router;

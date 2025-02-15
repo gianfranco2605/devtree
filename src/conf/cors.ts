@@ -1,24 +1,23 @@
+// conf/cors.ts
 import { CorsOptions } from "cors";
-console.log(process.argv);
 
 export const corsConfig: CorsOptions = {
-    origin: function(origin, callback) {
+  origin: (origin, callback) => {
+    // Determine if we're running in API mode
+    const isApiMode = process.argv.includes('--api');
 
-        const whitelist = [process.env.FRONTEND_URL];
-
-        if(process.argv[2] === '--api') {
-            whitelist.push(undefined); 
-        }
-        
-        if( whitelist.includes(origin)  ) {
-            
-            callback(null, true)
-            
-        } else {
-            
-            callback(new Error('Errors de CORS'))
-            
-        }
-        
+    // If no origin is provided (non-browser requests) and we're in API mode, allow it.
+    if (!origin && isApiMode) {
+      return callback(null, true);
     }
-} 
+
+    // Otherwise, only allow the frontend URL
+    if (origin === process.env.FRONTEND_URL) {
+      return callback(null, true);
+    }
+
+    // Reject all other origins
+    return callback(new Error("Not allowed by CORS"));
+  },
+  optionsSuccessStatus: 200, // Some legacy browsers (or clients) might need this
+};

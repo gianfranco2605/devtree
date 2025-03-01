@@ -5,7 +5,6 @@ import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
 
-
 export const createAccount = async (
   req: Request,
   res: Response,
@@ -88,5 +87,41 @@ export const getUser = async (req: Request, res: Response) => {
 
   res.json(req.user); 
 
+}
+
+export const updateProfile = async (req: Request, res: Response) => {
+
+  try {
+    
+    const { description } = req.body;
+
+    const Userhandle = slugify(req.body.handle, { lower: true });
+
+    const handleExist = await User.findOne({ Userhandle });
+
+    if (handleExist && handleExist.email !== req.user.email) {
+
+      res.status(409).send("Handle already exists");
+
+      return;
+
+    }
+
+    //Update user
+    req.user.description = description;
+
+    req.user.handle = Userhandle;
+
+    await req.user.save();
+
+    res.send('Profile updated');
+
+  } catch (e) {
+
+    const error = new Error('Handle already exists');
+
+    res.status(500).json({error: error.message})
+    
+  }
 }
 

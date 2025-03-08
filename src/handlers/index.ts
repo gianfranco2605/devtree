@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import slugify from "slugify";
+import formidable from "formidable";
+import cloudinary from "../conf/cloudinary";
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
@@ -119,7 +121,23 @@ export const updateProfile = async (req: Request, res: Response) => {
   } catch (e) {
 
     const error = new Error('Handle already exists');
+    res.status(500).json({error: error.message})
+    
+  }
+}
 
+export const uploadImage = async (req: Request, res: Response) => {
+
+  const form = formidable({ multiples: false});
+  form.parse(req, (err, fields, files) => {
+    console.log(files.file[0].filepath);
+    
+  })
+  try {
+    
+  } catch (e) {
+
+    const error = new Error('Handle already exists');
     res.status(500).json({error: error.message})
     
   }

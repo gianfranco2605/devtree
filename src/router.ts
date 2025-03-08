@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { createAccount, getUser, login, updateProfile } from "./handlers"; 
+import { createAccount, getUser, login, updateProfile, uploadImage } from "./handlers";
 import { handleInputErrors } from "./middleware/validation";
 import { authenticate } from "./middleware/auth";
 
@@ -20,36 +20,38 @@ router.post("/auth/register",
         .withMessage('Email not valid'),
     body('password')
         .isLength({ min: 6 })
-        .withMessage('Password to short'), 
+        .withMessage('Password to short'),
     //HandleErrors
     handleInputErrors,
     //Handle
-     createAccount
-    ) ;
+    createAccount
+);
 
-    router.post('/auth/login',
-        body('email')
-            .isEmail()
-            .withMessage('Email not valid'),
-        body('password')
-            .notEmpty()
-            .withMessage('Password is required'),  
-        login
-    );
+router.post('/auth/login',
+    body('email')
+        .isEmail()
+        .withMessage('Email not valid'),
+    body('password')
+        .notEmpty()
+        .withMessage('Password is required'),
+    login
+);
 
-    router.get('/user', authenticate, getUser)
+router.get('/user', authenticate, getUser)
 
-    // Update
-    router.patch('/user',
-        body('handle')
-            .notEmpty()
-            .withMessage('Handle is required'),
-        body('description')
-            .notEmpty()
-            .withMessage('Description is required'),
-        handleInputErrors,
-        authenticate,
-        updateProfile
-        );
+// Update
+router.patch('/user',
+    body('handle')
+        .notEmpty()
+        .withMessage('Handle is required'),
+    body('description')
+        .notEmpty()
+        .withMessage('Description is required'),
+    handleInputErrors,
+    authenticate,
+    updateProfile
+);
+
+router.post('/user/image', authenticate, uploadImage)
 
 export default router;

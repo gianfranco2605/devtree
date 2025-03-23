@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import slugify from "slugify";
+import { v4 as uuid } from "uuid"
 import formidable from "formidable";
 import cloudinary from "../conf/cloudinary";
 import User from "../models/User";
@@ -127,19 +128,54 @@ export const updateProfile = async (req: Request, res: Response) => {
 }
 
 export const uploadImage = async (req: Request, res: Response) => {
+  // Initialize formidable with a single file upload setting.
+  const form = formidable({ multiples: false });
 
-  const form = formidable({ multiples: false});
-  form.parse(req, (err, fields, files) => {
-    console.log(files.file[0].filepath);
-    
-  })
-  try {
-    
-  } catch (e) {
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error("Error parsing files:", err);
+      return res.status(500).json({ error: "Error parsing the files" });
+    }
 
-    const error = new Error('Handle already exists');
-    res.status(500).json({error: error.message})
-    
-  }
-}
+    // Check for file using proper key ("file") or fallback to an empty key.
+    const fileKey = files.file ? "file" : "";
+    const fileArray = fileKey ? files[fileKey] : files[""] || [];
 
+    if (!fileArray || (Array.isArray(fileArray) && fileArray.length === 0)) {
+      console.error("No file uploaded");
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Handle both array and single file object.
+    const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
+
+    // Validate file type (allow only image files).
+    if (!file.mimetype || !file.mimetype.startsWith("image/")) {
+      console.error("Invalid file type:", file.mimetype);
+      return res.status(400).json({ error: "Invalid file type. Only images are allowed." });
+    }
+
+    try {
+      // Wrap Cloudinary upload in a Promise for async/await usage.
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(file.filepath, { public_id: uuid() }, async (error, result) => {
+          if (error) {
+            const error = new Error("Error uploading file to Cloudinary");
+            return res.status(500).json({ error: error.message });
+          }
+          if(result) {
+            req.user.image = result.secure_url;
+            await req.user.save();
+            res.json({image: result.secure_url });
+          }
+        });
+      });
+
+      console.info("File uploaded successfully", result);
+      res.json({ result });
+    } catch (uploadError: any) {
+      console.error("Cloudinary upload error:", uploadError);
+      res.status(500).json({ error: uploadError.message });
+    }
+  });
+};

@@ -96,7 +96,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
   try {
     
-    const { description } = req.body;
+    const { description, links } = req.body;
 
     const Userhandle = slugify(req.body.handle, { lower: true });
 
@@ -114,6 +114,8 @@ export const updateProfile = async (req: Request, res: Response) => {
     req.user.description = description;
 
     req.user.handle = Userhandle;
+
+    req.user.links = links
 
     await req.user.save();
 

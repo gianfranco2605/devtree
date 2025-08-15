@@ -181,3 +181,19 @@ export const uploadImage = async (req: Request, res: Response) => {
     }
   });
 };
+
+export const getUserByHandle = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { handle } = req.params;
+    const user = await User.findOne({ handle }).select('-_id -__v -password -email');
+
+    if (!user) {
+      res.status(404).json({ error: 'Handle does not exist' });
+      return; // stop here
+    }
+
+    res.json(user);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
